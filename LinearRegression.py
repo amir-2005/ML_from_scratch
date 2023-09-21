@@ -28,7 +28,10 @@ class LinReg():
         if self._reg_method == "Lasso":
             coef[0] = 0 # Set bias planty to zero
             return self._reg_rate * np.sign(coef) / n
-
+            
+    def __cost(self, X, coef, Y):
+        return np.sum((X@coef - Y)**2)
+    
     def __normal_eq(self, X, Y):
         # Finding coefficients with Normal Equaltion
         self._coef = np.linalg.inv(X.T @ X) @ X.T @ Y
@@ -41,10 +44,9 @@ class LinReg():
 
         # Finding coefficients with Gradient Descent
         for i in range(self.n_iter):
-            copy = np.copy(self._coef)
             gradient = (X.T @ (X @ self._coef - Y)) + self.__reg_gradient(self._coef, n_samples)
             self._coef -= self._learning_rate * gradient
-            print(f" {i+1} {sum(abs(copy - self._coef))}")
+            print(f"Iteration {i+1} Cost : {self.__cost(X, self._coef, Y)}")
 
     def fit(self, X_train, Y_train):
         # Make sure inputs are numpy arrays

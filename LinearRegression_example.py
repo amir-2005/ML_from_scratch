@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Normalizer
 
-data = make_regression(n_samples=1000, n_features=3, noise=0.2, coef=True, random_state=3)
+data = make_regression(n_samples=1000, n_features=3, noise=0.2, coef=True)
 x = data[0]
 y = data[1]
 
