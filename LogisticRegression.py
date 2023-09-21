@@ -67,7 +67,7 @@ class LogisticReg():
             reg_gradient[0] = 0
             # Update coefficients using gradient descent with L2 regularization
             self.coef -= self.learning_rate * (gradient + reg_gradient)    
-            print(f"Iteration : {iteration} Cost : {self.__cost(X , self.coef, Y)}")
+            print(f"Iteration : {iteration+1} Cost : {self.__cost(X , self.coef, Y)}")
         
         return self
 
