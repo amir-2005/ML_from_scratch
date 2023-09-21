@@ -40,11 +40,11 @@ class LinReg():
         self._coef = np.zeros(n_features)
 
         # Finding coefficients with Gradient Descent
-        for _ in range(self.n_iter):
+        for i in range(self.n_iter):
             copy = np.copy(self._coef)
             gradient = (X.T @ (X @ self._coef - Y)) + self.__reg_gradient(self._coef, n_samples)
             self._coef -= self._learning_rate * gradient
-            print(sum(abs(copy - self._coef)))
+            print(f" {i+1} {sum(abs(copy - self._coef))}")
 
     def fit(self, X_train, Y_train):
         # Make sure inputs are numpy arrays
