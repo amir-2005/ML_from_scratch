@@ -63,20 +63,4 @@ class MC_Classifier:
             votes[np.where(prediction == 1), comb[1]] += 1
 
         return np.argmax(votes, axis=1)
-
-if __name__ == "__main__":
-    from LogisticRegression import LogisticReg
-    import pandas as pd
-    from sklearn.metrics import classification_report
-
-    df = pd.read_csv("F:/m m m/__AI/data/iris.csv")
-    df.variety.replace({"Setosa": 0, "Versicolor":1, "Virginica":2}, inplace=True)
-    X = df.values[:, :-1]
-    y = df.values[:, -1]
-
-    MC = MC_Classifier(LogisticReg)
-    MC.fit(X, y, reg_rate=0.01, learning_rate=0.005, n_iter=2000)
-    print(classification_report(y, MC.predict(X)))
-
-    
         
