@@ -83,8 +83,5 @@ class LogisticReg():
         - predictions (numpy array): Predicted probabilities or class labels.
         """
         X = np.c_[np.ones(X.shape[0]), X]
-        return self.__sigmoid(X @ self.coef) if prob else np.where(X @ self.coef > 0.5, 1, 0)
-    
-
-
-    
+        return self.__sigmoid(X @ self.coef) if prob else np.where(X @ self.coef > 0.5, 1, 0) 
+  
