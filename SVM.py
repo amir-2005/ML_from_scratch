@@ -4,11 +4,13 @@ from cvxopt import matrix, solvers
 
 
 class SVM():
-    def __init__(self, C=1, kernel="rbf", gamma=0.01, degree=3, Kernel_C=0, solver_library="cvxopt"):
+    
+    def __init__(self, C=1, kernel="rbf", gamma=0.01, degree=3, Kernel_C=0, solver_library="cvxopt", verbose=True):
         self.C = C
         self.gamma = gamma
         self.degree = degree
         self.Kernel_C = Kernel_C
+        
         if kernel in ["linear", "rbf", "poly", "logistic"]:
             if kernel == "rbf":
                 self.kernel = self._rbf
@@ -29,6 +31,7 @@ class SVM():
         else :
             raise(ValueError("Invalid solver library, shoud be cvxopt or scipy"))
         
+        self.verbose = verbose
         self.sv = None
         self.sv_y = None
         self.sv_alpha = None
@@ -78,6 +81,8 @@ class SVM():
             b = matrix(0.0)
             G = matrix(np.vstack((-np.eye(n), np.eye(n))))
             h = matrix(np.hstack((np.zeros(n), np.ones(n) * self.C)))
+            
+            solvers.options['show_progress'] = self.verbose
             result = solvers.qp(P, q, G, h, A, b)
             alphas = np.array(result["x"]).flatten()
             
@@ -91,21 +96,8 @@ class SVM():
         
         self.b = np.mean(self.sv_y - np.sum(self.sv_y * self.sv_alpha * self.kernel(self.sv, self.sv), axis=1))
 
+        return self
 
     def predict(self, X):
         result = np.sum(self.sv_y * self.sv_alpha * self.kernel(self.sv, X), axis=0) + self.b
         return np.where(result<0, 0, 1)
-    
-    
-if __name__ == "__main__":
-    from sklearn.datasets import make_moons
-    from mlxtend.plotting import plot_decision_regions
-    import matplotlib.pyplot as plt    
-
-    X,y = make_moons(300, noise=0.2)
-    
-    model = SVM(kernel="rbf", C = 100, gamma=0.1, degree=5, Kernel_C=1)
-    model.fit(X,y)
-    
-    plot_decision_regions(X, y, model)
-    plt.show()
