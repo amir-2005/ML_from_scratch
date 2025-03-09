@@ -29,10 +29,13 @@ class MLP:
 
     regularization_rate : float
         Strength of L2 regularization term, set 0 to disable regularization.
+        
+    beta : float
+        Parameter for momentum gradient descent , default i 0 (normal gradient descent)
     """
         
     def __init__(self, hidden_layer_sizes, activation='logistic', learning_rate=0.01, epochs=100,
-                 batch_size=200, tol=1e-8, regularization_rate=0.1):
+                 batch_size=200, tol=1e-8, regularization_rate=0.1, beta= 0.0):
         self.hidden_layer_sizes = hidden_layer_sizes
         self.activation = activation
         self.learning_rate = learning_rate
@@ -40,6 +43,7 @@ class MLP:
         self.batch_size = batch_size
         self.tol = tol
         self.reg_rate=regularization_rate
+        self.beta = beta
 
     def __activation(self, x):
         """
@@ -217,7 +221,9 @@ class MLP:
         x_batches, y_batches = self.__prepare_batches(X,y)
         
         perv_loss , n_iter_no_chang= 0, 0
-
+        v_weights = [np.zeros_like(w) for w in self.weights]
+        v_biases = [np.zeros_like(b) for b in self.biases] 
+    
         for epoch in range(1, self.epochs+1):
             epoch_loss = 0
             for X, y in zip(x_batches, y_batches):
@@ -230,8 +236,12 @@ class MLP:
                 epoch_loss += self.reg_rate * np.sum([np.sum(np.square(w)) for w in self.weights]) / n_samples
 
                 for i in range(len(self.weights)):
-                    self.weights[i] -= self.learning_rate * gradient_weights[i]
-                    self.biases[i] -= self.learning_rate * gradient_biases[i]
+                    v_weights[i] = self.beta*v_weights[i] + (1-self.beta) * gradient_weights[i] 
+                    v_biases[i] = self.beta * v_biases[i] + (1 - self.beta) * gradient_biases[i]
+            
+                for i in range(len(self.weights)):
+                    self.weights[i] -= self.learning_rate * v_weights[i]
+                    self.biases[i] -= self.learning_rate * v_biases[i]
 
             print(f"Epoch : {epoch} Loss : {epoch_loss}")
             
